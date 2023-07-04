@@ -58,7 +58,7 @@ This repository contains PyTorch implementation for Sparsifiner (CVPR 2023).
 
 To train a Sparsifiner model with default configuration on ImageNet, run:
 
-**DeiT-S**
+**Sparsifiner-S**
 
 Train on 8 GPUs
 ```
