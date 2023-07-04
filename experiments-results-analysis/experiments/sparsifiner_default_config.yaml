@@ -1,0 +1,102 @@
+MLFLOW:
+    EXPERIMENT_NAME: 'sparsifiner_default'
+
+TRAIN:
+    BATCH_SIZE: 168
+    EPOCHS: 50
+
+MODEL:
+    NAME: sparsifiner
+
+OPTIM:
+    WEIGHT_DECAY: 0.05
+
+SPAR:
+    # Training Strategy
+    TRAIN_STRATEGY:
+        INDICATOR: [['attn_recon', 0, 0, 5], ['cls_distill', 0, -5, 45]]
+        ATTN_RECON:
+            EPOCHS_LIST: [5]
+            WARMUP_EPOCHS: 3
+            BASE_LR: 3e-4
+            FINAL_LR: 2e-4
+        CLS_DISTILL:
+            EPOCHS_LIST: [45]
+            WARMUP_EPOCHS: 3
+            BASE_LR: 8e-5
+            FINAL_LR: 2e-6
+        ATTN_SELF_DISTILL:
+            EPOCHS_LIST: []
+            WARMUP_EPOCHS: 1
+            BASE_LR: 1e-4
+            FINAL_LR: 1e-6
+        JOINT:
+            EPOCHS_LIST: []
+            WARMUP_EPOCHS: 1
+            BASE_LR: 1e-4
+            FINAL_LR: 1e-6
+
+    # Model parameters
+    REDUCE_N_FACTOR: 6
+    REDUCE_C_FACTOR: 2
+    SHARE_INOUT_PROJ: False
+    TOKEN_PRUNING_LOC: []
+
+    # Pruning parameters
+    ATTN_KEEP_RATE: 0.25
+    TOKEN_KEEP_RATE_BASE: 1.0
+    PRUNE_ATTN_MATRIX_ROW: False
+    PRUNE_ATTN_MATRIX_COL: False
+
+    TRAIN_MASK_PREDICTOR_ONLY: False
+
+    # Pruning thresholds
+    BASIS_THRESHOLD: 2e-2
+    BASIS_COEF:
+        USE_TOPK: True
+        TOPK: 8
+        THRESHOLD: 5e-2
+    ATTN_SCORE:
+        USE_TOPK: True
+        THRESHOLD: 1e-4
+
+    OUT_BASIS_SPARSITY: True
+    OUT_BASIS_COEF_SPARSITY: True
+    OUT_ATTN_MASK_SPARSITY: True
+
+LOSS:
+    USE_L1: False
+
+    USE_CLS: True
+    CLS:
+        WEIGHT: 1.0
+
+    USE_CLS_DISTILL: True
+    CLS_DISTILL:
+        WEIGHT: 0.5
+
+    USE_TOKEN_DISTILL: True
+    TOKEN_DISTILL:
+        WEIGHT: 0.5
+
+    USE_ATTN_RECON: False
+    ATTN_RECON:
+        WEIGHT: 0.01
+
+    USE_ATTN_SELF_DISTILL: False
+    ATTN_SELF_DISTILL:
+        CRITERION: 'MSE'
+        WEIGHT: 0.002
+
+    USE_LEAST_K: False
+
+    USE_RATIO_LOSS: False
+
+TEST:
+    EVAL_ONLY: False
+
+# DESCRIPTION:
+# Default Sparsifiner Configuration
+# Keep 25% attention connectivity
+# Keep 100% tokens
+# Train Sparsifiner with attention distillation loss for 5 epochs then another 45 epochs for the backbone.
